@@ -6,23 +6,15 @@
 
     <title>Todo-JWT App</title>
 
-    <style>
-        html {
-            overflow-y: scroll;
-        }
-
-        body {
-            padding-top: 50px;
-        }
-
-        #todo-list {
-            margin-bottom: 30px;
-        }
-    </style>
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular.js"></script>
     <script src="client.js"></script>
+
+    <style type="text/css">
+        .row:nth-child(odd) {background: #e0e0e0;}
+    </style>
 
 </head>
 <body ng-app="app">
@@ -35,20 +27,22 @@
     <button ng-click="login.login()">Login</button>
     <button ng-click="login.logout()">Logout</button>
 </div>
+<p>&nbsp;</p>
+<div id="status"></div>
 <div class="container" ng-controller="todoController as todo">
 
-    <div class="jumbotron text-center">
+    <div class="text-center">
 
         <h3><button id="refesh" ng-click="todo.getAll()">Check for todo items</button></h3>
         <h1>Number of todo items: <span class="label label-info">{{ todoList.length }}</span></h1>
     </div>
+<p>&nbsp;</p>
+    <div id="todo-list" class="">
+        <div>
 
-    <div id="todo-list" class="row">
-        <div class="col-sm-4 col-sm-offset-4">
-
-            <div class="checkbox" ng-repeat="item in todoList">
+            <div class="row col-sm-8 col-sm-offset-2 text-center" ng-repeat="item in todoList">
                 <label>
-                    <input type="checkbox" ng-click="todo.delete(item._id)"> {{ item.text }} - Complete? <input id="{{ item._id }}" type="checkbox" ng-click="todo.markAsDone(item._id)" checked="{{ item.done == 'true' ? true : false}}">
+                    <button ng-click="todo.delete(item._id)">delete</button> {{ item.text }} - Complete? {{ item.done }} <button id="refesh" ng-click="todo.markAsDone(item._id)">Mark Complete</button>
                 </label>
             </div>
 

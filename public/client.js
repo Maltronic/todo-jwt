@@ -25,7 +25,7 @@
                 username: username,
                 password: password
             })
-        }
+        };
 
         self.login = function(username, password) {
             return $http.post('http://localhost:8080/api/login', {
@@ -70,8 +70,8 @@
                 });
         };
 
-        self.delete = function (id) {
-            $http.delete('/api/todo/' + id)
+        self.delete = function ($scope) {
+            $http.delete('/api/todo/' + $scope.id)
                 .success(function (data) {
                     $scope.todo = data;
                     console.log(data);
@@ -81,10 +81,10 @@
                 });
         };
 
-        self.markAsDone = function(id) {
-            $http.put('/api/todo/' + id)
+        self.markAsDone = function($scope) {
+            $http.put('/api/todo/' + $scope.id, $scope)
                 .success(function (data) {
-                    $('#done-' + id).attr('checked', data.done);
+                    $('#status').text("Item updated");
                     console.log(data);
                 })
                 .error(function (data) {
@@ -99,17 +99,20 @@
         function handleRequest(res, $scope) {
             var token = res.data ? res.data.token : null;
             if (token) {
+                $('#status').text("Logged In");
                 auth.saveToken(res.data.token);
             }
         }
 
         self.login = function () {
             user.login(self.username, self.password)
-                .then(handleRequest, handleRequest)
+                .then(handleRequest, handleRequest);
+
         };
         self.register = function () {
             user.register(self.username, self.password)
-                .then(handleRequest, handleRequest)
+                .then(handleRequest, handleRequest);
+            $('#status').text("Registered");
         };
         self.logout = function() {
             auth.logout && auth.logout()
@@ -137,6 +140,10 @@
         self.markAsDone = function() {
             user.markAsDone( event.currentTarget.id);
         }
+
+        $scope.checkItems = function () {
+            var i;
+        };
     }
 
     function authInterceptor(auth) {
