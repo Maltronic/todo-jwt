@@ -9,13 +9,13 @@ describe('JWT AUTH', function() {
             .post('/api/login')
             .send({ _id: user1._id, password: user1.password })
             .end(function(err, res) {
-                token = res.body.token; // Or something
+                token = res.body.token;
                 done();
             });
     });
 
     it('should get a valid token for user: user1', function(done) {
-        request('/get/user')
+        request('/api/todo')
             .set('Authorization', token)
             .expect(200, done);
     });
