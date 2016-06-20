@@ -1,7 +1,7 @@
 {
   "apps" : [{
-    "name"      : "TODO JWT API",
-    "script"    : "app.js",
+    "name"      : "todo-jwt",
+    "script"    : "server.js",
     "env": {
       "COMMON_VARIABLE": "true"
     },
