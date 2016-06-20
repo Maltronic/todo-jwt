@@ -14,19 +14,19 @@
   }],
   "deploy" : {
     "production" : {
-      "user" : "node",
-      "host" : "",
+      "user" : "todo-jwt",
+      "host" : "localhost",
       "ref"  : "origin/master",
-      "repo" : "",
-      "path" : "",
+      "repo" : "https://github.com/Maltronic/todo-jwt.git",
+      "path" : "/",
       "post-deploy" : "npm install && pm2 startOrRestart ecosystem.json --env production"
     },
     "dev" : {
-      "user" : "node",
+      "user" : "todo-jwt",
       "host" : "localhost",
       "ref"  : "origin/master",
-      "repo" : "",
-      "path" : "deploy/",
+      "repo" : "https://github.com/Maltronic/todo-jwt.git",
+      "path" : "/",
       "post-deploy" : "npm install && pm2 startOrRestart ecosystem.json --env dev",
       "env"  : {
         "NODE_ENV": "dev"
