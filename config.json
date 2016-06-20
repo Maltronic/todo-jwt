@@ -1,0 +1,16 @@
+{
+  "domain": "localhost",
+  "port": "8080",
+  "db": {
+    "host": "localhost",
+    "name": "todo1"
+  },
+  "db_test": {
+    "host": "localhost",
+    "name": "todo1_test"
+  },
+  "jwt": {
+    "key": "super_secret_api_key!",
+    "expiresInMinutes": 60
+  }
+}

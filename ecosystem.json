@@ -1,0 +1,36 @@
+{
+  "apps" : [{
+    "name"      : "TODO JWT API",
+    "script"    : "app.js",
+    "env": {
+      "COMMON_VARIABLE": "true"
+    },
+    "env_production" : {
+      "NODE_ENV": "production"
+    }
+  },{
+    "name"      : "TODO FRONTEND",
+    "script"    : "frontend.js"
+  }],
+  "deploy" : {
+    "production" : {
+      "user" : "node",
+      "host" : "",
+      "ref"  : "origin/master",
+      "repo" : "",
+      "path" : "",
+      "post-deploy" : "npm install && pm2 startOrRestart ecosystem.json --env production"
+    },
+    "dev" : {
+      "user" : "node",
+      "host" : "localhost",
+      "ref"  : "origin/master",
+      "repo" : "",
+      "path" : "deploy/",
+      "post-deploy" : "npm install && pm2 startOrRestart ecosystem.json --env dev",
+      "env"  : {
+        "NODE_ENV": "dev"
+      }
+    }
+  }
+}
