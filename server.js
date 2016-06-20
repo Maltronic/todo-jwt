@@ -25,17 +25,18 @@ var jwtCheck = jwt({
 });
 jwtCheck.unless = unless;
 
-app.use(jwtCheck.unless({path: '/api/login'}));
-app.use(auth.middleware().unless({path: '/api/login'}));
+app.use(jwtCheck.unless({path: ['/public/index.html', '/public/client.js', '/api/login', '/api/register']}));
+app.use(auth.middleware().unless({path: ['/public/index.html', '/public/client.js', '/api/login', '/api/register']}));
 app.use('/api', require(path.join(__dirname, 'routes.js'))());
+app.use('/public', express.static('public'));
 
-app.all('*', function(req, res, next) {
+app.all('*', function (req, res, next) {
     next(new NotFoundError('404'));
 });
 
 app.use(function (err, req, res) {
     var code = 500,
-        msg = { message: 'Internal Server Error' };
+        msg = {message: 'Internal Server Error'};
 
     switch (err.name) {
         case 'UnauthorizedError':

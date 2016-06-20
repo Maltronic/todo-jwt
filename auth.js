@@ -27,15 +27,11 @@ module.exports.create = function (user, req, res, next) {
     if (_.isEmpty(user)) {
         return next(new Error('User data cannot be empty.'));
     }
-
     var data = {
         _id: user._id,
         username: user.username,
-        access: user.access,
-        name: user.name,
-        email: user.email,
         token: jsonwebtoken.sign({ _id: user._id }, config.jwt.key, {
-            expiresInMinutes: config.jwt.expiresInMinutes
+            expiresIn: config.jwt.expiresIn
         })
     };
 
@@ -51,7 +47,7 @@ module.exports.create = function (user, req, res, next) {
         }
 
         if (reply) {
-            client.expire(data.token, config.jwt.expiresInMinutes * 60, function (err, reply) {
+            client.expire(data.token, config.jwt.expiresIn * 60, function (err, reply) {
                 if (err) {
                     return next(new Error("Can not set the expire value for the token key"));
                 }
@@ -111,7 +107,7 @@ module.exports.verify = function (req, res, next) {
 
     var token = exports.fetch(req.headers);
 
-    jsonwebtoken.verify(token, config.jwt.key, function (err, decode) {
+    jsonwebtoken.verify(token, config.jwt.key, function (err) {
 
         if (err) {
             req.user = undefined;
@@ -170,5 +166,5 @@ module.exports.middleware = function () {
 
 };
 
-module.exports.TOKEN_EXPIRATION = config.jwt.expiresInMinutes;
-module.exports.TOKEN_EXPIRATION_SEC = config.jwt.expiresInMinutes * 60;
+module.exports.TOKEN_EXPIRATION = config.jwt.expiresIn;
+module.exports.TOKEN_EXPIRATION_SEC = config.jwt.expiresIn * 60;

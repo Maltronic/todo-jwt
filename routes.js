@@ -4,6 +4,7 @@ var path = require('path'),
     auth = require(path.join(__dirname, 'auth.js')),
     Router = require('express').Router,
     UnauthorizedAccessError = require(path.join(__dirname, 'errors', 'UnauthorizedAccessError.js')),
+    NotFoundError = require(path.join(__dirname, 'errors', 'NotFoundError.js')),
     User = require(path.join(__dirname, 'models', 'user.js')),
     TodoItem = require(path.join(__dirname, 'models', 'todoItem.js')),
     jwt = require('express-jwt');
@@ -11,6 +12,28 @@ var path = require('path'),
 module.exports = function () {
 
     var router = new Router();
+
+    router.route('/register').post(function (req, res) {
+        var data = {
+            username: req.body.username,
+            password: req.body.password
+        };
+        User.create(data, function (err, user) {
+            if (err) {
+                res.send(err);
+                return;
+            }
+
+            User.findOne({_id: user._id}, function (err, user) {
+                if (err) {
+                    res.send(err);
+                    return;
+                }
+
+                res.json(user);
+            });
+        });
+    });
 
     router.route('/verify').get(function (req, res, next) {
         return res.status(200).json(undefined);
@@ -44,7 +67,7 @@ module.exports = function () {
     });
 
     router.route('/todo/:_id').get(function (req, res) {
-        TodoItem.find({_id: req.params._id}, function (err, todo) {
+        TodoItem.findOne({_id: req.params._id}, function (err, todo) {
             if (err) {
                 res.send(err);
                 return;
@@ -67,38 +90,59 @@ module.exports = function () {
                     return;
                 }
 
-                TodoItem.find()
-
-                res.json(todos);
-            });
-        }
-    );
-
-    router.route('/todo/:id').put(function (req, res) {
-        TodoItem.update({
-                text: req.body.text,
-                done: false
-            }, function (err, todo) {
-                if (err) {
-                    res.send(err);
-                    return;
-                }
-
-                TodoItem.find(function (err, todos) {
+                TodoItem.findOne({_id: todo._id}, function (err, todo) {
                     if (err) {
                         res.send(err);
                         return;
                     }
 
-                    res.json(todos);
+                    res.json(todo);
                 });
+            });
+        }
+    );
+
+    router.route('/todo/:_id').put(function (req, res) {
+        TodoItem.findOne({_id: req.params._id}, function (err, todo) {
+            if (err) {
+                res.send(err);
+                return;
             }
-        );
+
+            if (_.isEmpty(todo)) {
+                res.send(new NotFoundError('404'));
+                return;
+            }
+
+            if (todo.id !== req.params._id) {
+                res.send(new Error('400'));
+                return;
+            }
+
+            todo = req.body;
+
+            TodoItem.update(todo, function (err, todo) {
+                    if (err) {
+                        res.send(err);
+                        return;
+                    }
+
+                    TodoItem.findOne({_id: req.params._id}, function (err, todo) {
+                        if (err) {
+                            res.send(err);
+                            return;
+                        }
+
+                        res.json(todo);
+                    });
+                }
+            );
+        });
     });
 
-    router.route('/todo/:id').delete(function (req, res) {
+    router.route('/todo/:_id').delete(function (req, res) {
         TodoItem.remove({
-            _id: req.params.id
+            _id: req.params._id
         }, function (err, todo) {
             if (err) {
                 res.send(err);
@@ -130,13 +174,12 @@ var authenticate = function (req, res, next) {
         User.findOne({
             username: username
         }, function (err, user) {
-
             if (err || !user) {
                 return next(new UnauthorizedAccessError('401', {
                     message: 'Credentials Failed'
                 }));
             }
-
+console.log(util.inspect(user));
             user.comparePassword(password, function (err, isMatch) {
                 if (isMatch && !err) {
                     auth.create(user, req, res, next);

@@ -11,6 +11,6 @@
   },
   "jwt": {
     "key": "super_secret_api_key!",
-    "expiresInMinutes": 60
+    "expiresIn": 60
   }
 }

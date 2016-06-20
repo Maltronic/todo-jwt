@@ -1,0 +1,73 @@
+<!doctype html>
+
+<html>
+<head>
+    <meta charset="utf-8">
+
+    <title>Todo-JWT App</title>
+
+    <style>
+        html {
+            overflow-y: scroll;
+        }
+
+        body {
+            padding-top: 50px;
+        }
+
+        #todo-list {
+            margin-bottom: 30px;
+        }
+    </style>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular.js"></script>
+    <script src="client.js"></script>
+
+</head>
+<body ng-app="app">
+<div class="container" ng-controller="loginController as login">
+    <input type="text" ng-model="login.username" placeholder="username"><br>
+    <input type="password" ng-model="login.password" placeholder="password"><br>
+    <br>
+
+    <button ng-click="login.register()">Register</button>
+    <button ng-click="login.login()">Login</button>
+    <button ng-click="login.logout()">Logout</button>
+</div>
+<div class="container" ng-controller="todoController as todo">
+
+    <div class="jumbotron text-center">
+
+        <h3><button id="refesh" ng-click="todo.getAll()">Check for todo items</button></h3>
+        <h1>Number of todo items: <span class="label label-info">{{ todoList.length }}</span></h1>
+    </div>
+
+    <div id="todo-list" class="row">
+        <div class="col-sm-4 col-sm-offset-4">
+
+            <div class="checkbox" ng-repeat="item in todoList">
+                <label>
+                    <input type="checkbox" ng-click="todo.delete(item._id)"> {{ item.text }} - Complete? <input id="{{ item._id }}" type="checkbox" ng-click="todo.markAsDone(item._id)" checked="{{ item.done == 'true' ? true : false}}">
+                </label>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="todo-form" class="row">
+        <div class="col-sm-8 col-sm-offset-2 text-center">
+            <form>
+                <div class="form-group">
+                    <input type="text" class="form-control input-lg text-center"
+                           placeholder="Enter a task" ng-model="formData.text">
+                </div>
+                <button type="submit" class="btn btn-primary btn-lg" ng-click="todo.create()">Add</button>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
