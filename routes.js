@@ -20,13 +20,15 @@ module.exports = function () {
         };
         User.create(data, function (err, user) {
             if (err) {
-                res.send(err);
+                res.status(400);
+                res.send('Could not create user');
                 return;
             }
 
             User.findOne({_id: user._id}, function (err, user) {
                 if (err) {
-                    res.send(err);
+                    res.status(400);
+                    res.send('Could not create user');
                     return;
                 }
 
@@ -86,13 +88,15 @@ module.exports = function () {
                 priority: (util.isNumber(req.body.priority)) ? req.body.priority : 0
             }, function (err, todo) {
                 if (err) {
-                    res.send(err);
+                    res.status(400);
+                    res.send('Could not create todo item');
                     return;
                 }
 
                 TodoItem.findOne({_id: todo._id}, function (err, todo) {
                     if (err) {
-                        res.send(err);
+                        res.status(400);
+                        res.send('Could not create todo item');
                         return;
                     }
 

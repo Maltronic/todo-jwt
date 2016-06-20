@@ -1,175 +1,132 @@
-(function () {
+var app = angular.module('todoApp', []);
 
-    function authService($window) {
-        var self = this;
+app.controller('Login', function (auth, $scope, $http, $rootScope) {
+    $scope.register = function () {
+        return $http.post('http://localhost:8080/api/register', {
+            username: $scope.username,
+            password: $scope.password
+        }).then(function (res) {
+            $scope.status = "User Registered";
+            $scope.info = "";
+        }, function (err) {
+            $scope.status = "Error Whilst Registering";
+            $scope.info = err
+        });
+    };
 
-        self.getToken = function() {
-            return $window.localStorage['jwtToken'];
-        };
-
-        self.saveToken = function(token) {
-            $window.localStorage['jwtToken'] = token;
-        };
-        self.parseJwt = function(token) {
-            var base64Url = token.split('.')[1];
-            var base64 = base64Url.replace('-', '+').replace('_', '/');
-            return JSON.parse($window.atob(base64));
-        }
+    $scope.login = function () {
+        return $http.post('http://localhost:8080/api/login', {
+            username: $scope.username,
+            password: $scope.password
+        }).then(function (res) {
+            $scope.status = "Logged in";
+            $scope.info = "";
+            auth.saveToken(res.data.token);
+            $rootScope.$emit('todoListUpdated');
+        }, function (err) {
+            $scope.status = "Error logging in";
+            $scope.info = err
+        });
+    };
+    $scope.logout = function ($scope) {
+        auth.logout && auth.logout()
+    };
+    $scope.isAuthed = function ($scope) {
+        return auth.isAuthed ? auth.isAuthed() : false
     }
+});
 
-    function userService($http, auth, $timeout) {
-        var self = this;
+app.controller('Todo', function (auth, $scope, $rootScope, $http) {
 
-        self.register = function(username, password) {
-            return $http.post('http://localhost:8080/api/register', {
-                username: username,
-                password: password
+    $rootScope.$on('todoListUpdated', function () {
+        $http.get('/api/todo')
+            .success(function (data) {
+                $scope.todoList = data;
             })
-        };
+            .error(function (data) {
+                console.log('Error: ' + data);
+            });
+    });
 
-        self.login = function(username, password) {
-            return $http.post('http://localhost:8080/api/login', {
-                username: username,
-                password: password
+    $scope.getAll = function () {
+        $http.get('/api/todo')
+            .success(function (data) {
+                $scope.todoList = data;
             })
-        };
+            .error(function (data) {
+                console.log('Error: ' + data);
+            });
+    };
 
-        self.getAll = function ($scope) {
-            $http.get('/api/todo')
-                .success(function (data) {
-                    console.log(data);
-                    $scope.todoList = data;
-                    return data;
-                })
-                .error(function (data) {
-                    console.log('Error: ' + data);
-                });
-        }
+    $scope.create = function (text) {
+        $http.post('/api/todo', {'text': text})
+            .success(function (data) {
+                $scope.formData = {};
+                $scope.info = 'Item created';
+                $rootScope.$emit('todoListUpdated');
+            })
+            .error(function (data) {
+                $scope.info = data;
+            });
+    };
 
-        self.getTodo = function ($scope) {
-            $http.get('/api/todo/' + $scope.id)
-                .success(function (data) {
-                    console.log(data);
-                })
-                .error(function (data) {
-                    console.log('Error: ' + data);
-                });
-        }
+    $scope.delete = function (todo) {
+        $http.delete('/api/todo/' + todo._id)
+            .success(function (data) {
+                $scope.info = 'Item deleted';
+                $rootScope.$emit('todoListUpdated');
+            })
+            .error(function (data) {
+                $scope.info = data;
+            });
+    };
 
-        self.create = function ($scope) {
-            $http.post('/api/todo', $scope.formData)
-                .success(function (data) {
-                    $scope.formData = {};
-                    console.log(data);
-                    $timeout(function () {
-                        $('#refesh').triggerHandler('click');
-                    });
-                })
-                .error(function (data) {
-                    console.log('Error: ' + data);
-                });
-        };
+    $scope.markAsDone = function (todo) {
+        todo.done = (!todo.done);
+        $http.put('/api/todo/' + todo._id, todo)
+            .success(function (data) {
+                $scope.info = 'Item updated';
+                $rootScope.$emit('todoListUpdated');
+            })
+            .error(function (data) {
+                $scope.info = data;
+            });
+    };
+});
 
-        self.delete = function ($scope) {
-            $http.delete('/api/todo/' + $scope.id)
-                .success(function (data) {
-                    $scope.todo = data;
-                    console.log(data);
-                })
-                .error(function (data) {
-                    console.log('Error: ' + data);
-                });
-        };
+app.service('auth', function ($window) {
+    var self = this;
 
-        self.markAsDone = function($scope) {
-            $http.put('/api/todo/' + $scope.id, $scope)
-                .success(function (data) {
-                    $('#status').text("Item updated");
-                    console.log(data);
-                })
-                .error(function (data) {
-                    console.log('Error: ' + data);
-                });
-        };
+    self.getToken = function () {
+        return $window.localStorage['jwtToken'];
+    };
+
+    self.saveToken = function (token) {
+        $window.localStorage['jwtToken'] = token;
+    };
+    self.parseJwt = function (token) {
+        var base64Url = token.split('.')[1];
+        var base64 = base64Url.replace('-', '+').replace('_', '/');
+        return JSON.parse($window.atob(base64));
     }
+});
 
-    function loginController(user, auth, $scope) {
-        var self = this;
-
-        function handleRequest(res, $scope) {
-            var token = res.data ? res.data.token : null;
-            if (token) {
-                $('#status').text("Logged In");
-                auth.saveToken(res.data.token);
+app.factory('authInterceptor', function (auth) {
+    return {
+        request: function (config) {
+            var token = auth.getToken();
+            if (config.url.indexOf('/api') === 0 && token) {
+                config.headers.Authorization = 'Bearer ' + token;
             }
-        }
 
-        self.login = function () {
-            user.login(self.username, self.password)
-                .then(handleRequest, handleRequest);
-
-        };
-        self.register = function () {
-            user.register(self.username, self.password)
-                .then(handleRequest, handleRequest);
-            $('#status').text("Registered");
-        };
-        self.logout = function() {
-            auth.logout && auth.logout()
-        }
-        self.isAuthed = function () {
-            return auth.isAuthed ? auth.isAuthed() : false
-        }
-
-    }
-
-    function todoController(user, auth, $scope) {
-        var self = this;
-        $scope.init = function (todo) {
-            console.log(todo);
-        };
-
-        self.getAll = function() {
-            user.getAll($scope);
-        }
-
-        self.create = function() {
-            user.create($scope);
-        }
-
-        self.markAsDone = function() {
-            user.markAsDone( event.currentTarget.id);
-        }
-
-        $scope.checkItems = function () {
-            var i;
-        };
-    }
-
-    function authInterceptor(auth) {
-        return {
-            request: function (config) {
-                var token = auth.getToken();
-                if (config.url.indexOf('/api') === 0 && token) {
-                    config.headers.Authorization = 'Bearer ' + token;
-                }
-
-                return config;
-            },
-            response: function (res) {
-                return res;
-            }
+            return config;
+        },
+        response: function (res) {
+            return res;
         }
     }
+});
 
-    angular.module('app', [])
-        .factory('authInterceptor', authInterceptor)
-        .service('user', userService)
-        .service('auth', authService)
-        .config(function ($httpProvider) {
-            $httpProvider.interceptors.push('authInterceptor');
-        })
-        .controller('loginController', loginController)
-        .controller('todoController', todoController)
-})
-();
+app.config(function ($httpProvider) {
+    $httpProvider.interceptors.push('authInterceptor');
+});

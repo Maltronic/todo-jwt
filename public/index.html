@@ -1,6 +1,5 @@
-<!doctype html>
-
-<html>
+<!DOCTYPE html>
+<html lang="en" ng-app="todoApp">
 <head>
     <meta charset="utf-8">
 
@@ -8,60 +7,79 @@
 
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular.js"></script>
     <script src="client.js"></script>
 
     <style type="text/css">
-        .row:nth-child(odd) {background: #e0e0e0;}
+        .todoItems:nth-child(odd) {
+            background: #e0e0e0;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
     </style>
 
 </head>
-<body ng-app="app">
-<div class="container" ng-controller="loginController as login">
-    <input type="text" ng-model="login.username" placeholder="username"><br>
-    <input type="password" ng-model="login.password" placeholder="password"><br>
-    <br>
+<body>
+<div class="container">
+    &nbsp;
+    <div class="row" ng-controller="Login">
 
-    <button ng-click="login.register()">Register</button>
-    <button ng-click="login.login()">Login</button>
-    <button ng-click="login.logout()">Logout</button>
-</div>
-<p>&nbsp;</p>
-<div id="status"></div>
-<div class="container" ng-controller="todoController as todo">
-
-    <div class="text-center">
-
-        <h3><button id="refesh" ng-click="todo.getAll()">Check for todo items</button></h3>
-        <h1>Number of todo items: <span class="label label-info">{{ todoList.length }}</span></h1>
-    </div>
-<p>&nbsp;</p>
-    <div id="todo-list" class="">
-        <div>
-
-            <div class="row col-sm-8 col-sm-offset-2 text-center" ng-repeat="item in todoList">
-                <label>
-                    <button ng-click="todo.delete(item._id)">delete</button> {{ item.text }} - Complete? {{ item.done }} <button id="refesh" ng-click="todo.markAsDone(item._id)">Mark Complete</button>
-                </label>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Login:
             </div>
-
-        </div>
-    </div>
-
-    <div id="todo-form" class="row">
-        <div class="col-sm-8 col-sm-offset-2 text-center">
-            <form>
-                <div class="form-group">
-                    <input type="text" class="form-control input-lg text-center"
-                           placeholder="Enter a task" ng-model="formData.text">
+            <div class="panel-body">
+                <div class="col-xs-6">
+                    <input type="text" ng-model="username" placeholder="username"><br>
+                    <input type="password" ng-model="password" placeholder="password"><br>
+                    <button ng-click="register()">Register</button>
+                    <button ng-click="login()">Login</button>
+                    <button ng-click="logout()">Logout</button>
                 </div>
-                <button type="submit" class="btn btn-primary btn-lg" ng-click="todo.create()">Add</button>
-            </form>
+                <div class="col-xs-6">
+                    <h3>Auth Status</h3>
+                    <h4><span class="text-center label label-info">{{ status }}</span></h4>
+                    <h5>Auth info: <span style="display:flex">{{ info }}</span></h5>
+                </div>
+            </div>
         </div>
     </div>
-
+    <div class="row" ng-controller="Todo">
+        <div class="text-center panel panel-default">
+            <div class="panel-body">
+                <p>&nbsp;</p>
+                <h4>
+                    <button id="refesh" ng-click="getAll()">Check for todo items</button>
+                </h4>
+                <h4>Number of todo items: <span class="label label-info">{{ todoList.length }}</span></h4>
+            </div>
+        </div>
+        <p>&nbsp;</p>
+        <div class="text-center panel panel-default">
+            <div class="panel-body">
+                <div class="todoItems row col-sm-8 col-sm-offset-2 text-center" ng-repeat="item in todoList">
+                    <label>
+                        {{ item.text }}&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;&nbsp;Completed? {{ item.done }}
+                        <button ng-click="markAsDone(item)">toggle</button>
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        <button ng-click="delete(item)">delete</button>
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div id="todo-form" class="row">
+            <div class="col-sm-8 col-sm-offset-2 text-center">
+                <form>
+                    <div class="form-group">
+                        <input type="text" class="form-control input-lg text-center"
+                               placeholder="Enter a task" ng-model="formData">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg" ng-click="create(formData)">Add</button>
+                </form>
+            </div>
+        </div>
+        <h5>Item info: <span style="display:flex">{{ info }}</span></h5>
+    </div>
 </div>
-
 </body>
 </html>

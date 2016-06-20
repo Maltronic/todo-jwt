@@ -23,12 +23,21 @@ app.use(methodOverride());
 var jwtCheck = jwt({
     secret: config.jwt.key
 });
-jwtCheck.unless = unless;
+app.use(auth.middleware(jwtCheck).unless(
+    {
+        path: [
+            '/api/login',
+            '/api/register',
 
-app.use(jwtCheck.unless({path: ['/public/index.html', '/public/client.js', '/api/login', '/api/register']}));
-app.use(auth.middleware().unless({path: ['/public/index.html', '/public/client.js', '/api/login', '/api/register']}));
+            //Front End
+            '/index.html',
+            '/client.js',
+            '/favicon.ico'
+        ]
+    }
+));
 app.use('/api', require(path.join(__dirname, 'routes.js'))());
-app.use('/public', express.static('public'));
+app.use('/', express.static('public'));
 
 app.all('*', function (req, res, next) {
     next(new NotFoundError('404'));
