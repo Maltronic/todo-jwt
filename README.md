@@ -16,8 +16,8 @@ A number of perquisites must be satisifed to run todo-jwt:
 
 1. First clone the GIT Repo and install components:
 ```bash
-$ git clone todo1.git
-$ cd todo1
+$ git clone https://github.com/Maltronic/todo-jwt.git
+$ cd todo-jwt
 $ npm install
 ```
 
@@ -28,8 +28,7 @@ $ openssl genrsa -out var/private.pem -aes256 4096
 $ openssl rsa -pubout -in var/private.pem -out var/public.pem
 ```
 
-Certificates must be password protected for security
-====================================================
+__(certificate must be password protected)__
 
 3. Modify relevant server credentials in the *ecosystem.json* & *config.json* files.
 
