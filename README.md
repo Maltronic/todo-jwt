@@ -32,14 +32,9 @@ __(certificate must be password protected)__
 
 3. Modify relevant server credentials in the *ecosystem.json* & *config.json* files.
 
-4. Start the node.js server using a process manager like pm2:
+4. Start the node.js server using a process manager like [pm2] (http://pm2.keymetrics.io/):
 ```bash
-$ pm2 deploy ecosystem.json dev
-```
-
-5. Atlernatively the server can be started more directly using pm2:
-```bash
-$ npm install && pm2 startOrRestart ecosystem.json --env dev
+$ pm2 startOrRestart ecosystem.json --env dev
 ```
 
 ## Troubleshooting
