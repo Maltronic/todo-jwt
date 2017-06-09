@@ -44,7 +44,7 @@ app.controller('Todo', function (auth, $scope, $rootScope, $http) {
                 $scope.todoList = data;
             })
             .error(function (data) {
-                console.log('Error: ' + data);
+                console.debug('Error: ' + data);
             });
     });
 
@@ -54,14 +54,14 @@ app.controller('Todo', function (auth, $scope, $rootScope, $http) {
                 $scope.todoList = data;
             })
             .error(function (data) {
-                console.log('Error: ' + data);
+                console.debug('Error: ' + data);
             });
     };
 
     $scope.create = function (text) {
         $http.post('/api/todo', {'text': text})
             .success(function (data) {
-                $scope.formData = {};
+                $scope.formData = null;
                 $scope.info = 'Item created';
                 $rootScope.$emit('todoListUpdated');
             })

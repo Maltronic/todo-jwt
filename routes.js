@@ -123,24 +123,14 @@ module.exports = function () {
                 return;
             }
 
-            todo = req.body;
-
-            TodoItem.update(todo, function (err, todo) {
-                    if (err) {
-                        res.send(err);
-                        return;
-                    }
-
-                    TodoItem.findOne({_id: req.params._id}, function (err, todo) {
-                        if (err) {
-                            res.send(err);
-                            return;
-                        }
-
-                        res.json(todo);
-                    });
+            TodoItem.findOneAndUpdate({_id: req.params._id}, function (err, todo) {
+                if (err) {
+                    res.send(err);
+                    return;
                 }
-            );
+
+                res.json(todo);
+            });
         });
     });
 
@@ -183,7 +173,6 @@ var authenticate = function (req, res, next) {
                     message: 'Credentials Failed'
                 }));
             }
-console.log(util.inspect(user));
             user.comparePassword(password, function (err, isMatch) {
                 if (isMatch && !err) {
                     auth.create(user, req, res, next);

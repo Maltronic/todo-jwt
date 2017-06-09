@@ -10,7 +10,7 @@
     "name": "todo1_test"
   },
   "jwt": {
-    "key": "super_secret_api_key!",
+    "key": "testt",
     "expiresIn": 60
   }
 }
