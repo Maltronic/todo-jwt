@@ -39,7 +39,7 @@ app.controller('Login', function (auth, $scope, $http, $rootScope) {
 app.controller('Todo', function (auth, $scope, $rootScope, $http) {
 
     $rootScope.$on('todoListUpdated', function () {
-        $http.get('/api/todo')
+        $http.get('http://localhost:8080/api/todo')
             .success(function (data) {
                 $scope.todoList = data;
             })
@@ -49,7 +49,7 @@ app.controller('Todo', function (auth, $scope, $rootScope, $http) {
     });
 
     $scope.getAll = function () {
-        $http.get('/api/todo')
+        $http.get('http://localhost:8080/api/todo')
             .success(function (data) {
                 $scope.todoList = data;
             })
@@ -59,7 +59,7 @@ app.controller('Todo', function (auth, $scope, $rootScope, $http) {
     };
 
     $scope.create = function (text) {
-        $http.post('/api/todo', {'text': text})
+        $http.post(' ', {'text': text})
             .success(function (data) {
                 $scope.formData = null;
                 $scope.info = 'Item created';
@@ -71,7 +71,7 @@ app.controller('Todo', function (auth, $scope, $rootScope, $http) {
     };
 
     $scope.delete = function (todo) {
-        $http.delete('/api/todo/' + todo._id)
+        $http.delete('http://localhost:8080/api/todo/' + todo._id)
             .success(function (data) {
                 $scope.info = 'Item deleted';
                 $rootScope.$emit('todoListUpdated');
@@ -83,7 +83,7 @@ app.controller('Todo', function (auth, $scope, $rootScope, $http) {
 
     $scope.markAsDone = function (todo) {
         todo.done = (!todo.done);
-        $http.put('/api/todo/' + todo._id, todo)
+        $http.put('http://localhost:8080/api/todo/' + todo._id, todo)
             .success(function (data) {
                 $scope.info = 'Item updated';
                 $rootScope.$emit('todoListUpdated');

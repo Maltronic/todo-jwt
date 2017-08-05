@@ -28,3 +28,5 @@ benchmarks/graphs
 # JetBrains
 .idea
 
+# Custom
+var/
