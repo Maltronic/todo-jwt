@@ -56,6 +56,7 @@ module.exports = function () {
         return res.status(200).json(req.user);
     });
 
+    // Fetch List
     router.route('/todo').get(function (req, res) {
         TodoItem.find(function (err, todoList) {
             if (err) {
@@ -68,6 +69,7 @@ module.exports = function () {
 
     });
 
+    // Fetch Item
     router.route('/todo/:_id').get(function (req, res) {
         TodoItem.findOne({_id: req.params._id}, function (err, todo) {
             if (err) {
@@ -80,6 +82,7 @@ module.exports = function () {
 
     });
 
+    // Create Item
     router.route('/todo').post(function (req, res) {
             TodoItem.create({
                 text: req.body.text,
@@ -106,11 +109,11 @@ module.exports = function () {
         }
     );
 
+    // Update Item
     router.route('/todo/:_id').put(function (req, res) {
-        TodoItem.findOne({_id: req.params._id}, function (err, todo) {
+        const test = TodoItem.findOne({_id: req.params._id}, function (err, todo) {
             if (err) {
                 res.send(err);
-                return;
             }
 
             if (_.isEmpty(todo)) {
@@ -123,17 +126,17 @@ module.exports = function () {
                 return;
             }
 
-            TodoItem.findOneAndUpdate({_id: req.params._id}, function (err, todo) {
+            TodoItem.update({_id: req.params._id}, req.body, {new: true}, function (err) {
                 if (err) {
                     res.send(err);
-                    return;
                 }
-
-                res.json(todo);
             });
+            todo = req.body;
+            res.json(todo);
         });
     });
 
+    // Delete Item
     router.route('/todo/:_id').delete(function (req, res) {
         TodoItem.remove({
             _id: req.params._id

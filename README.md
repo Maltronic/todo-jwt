@@ -32,7 +32,9 @@ __(certificate must be password protected)__
 
 3. Modify relevant server credentials in the *ecosystem.json* & *config.json* files.
 
-4. Start the node.js server using a process manager like [pm2] (http://pm2.keymetrics.io/):
+4. Choose whether to use the angularjs or reactjs web app by renaming directory "public_angularjs" or "public_reactjs" to just "public".
+
+5. Start the node.js server using a process manager like [pm2] (http://pm2.keymetrics.io/):
 ```bash
 $ pm2 startOrRestart ecosystem.json --env dev
 ```

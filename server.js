@@ -11,10 +11,12 @@ var path = require('path'),
     NotFoundError = require(path.join(__dirname, 'errors', 'NotFoundError.js')),
     util = require('util'),
     auth = require(path.join(__dirname, 'auth.js')),
-    unless = require('express-unless');
+    unless = require('express-unless'),
+    cors = require('cors');
 
 mongoose.connect('mongodb://' + config.db.host);
 
+app.use(cors())
 app.use(bodyParser.urlencoded({'extended': 'true'}));
 app.use(bodyParser.json());
 app.use(bodyParser.json({type: 'application/json'}));
@@ -40,7 +42,7 @@ app.use('/api', require(path.join(__dirname, 'routes.js'))());
 app.use('/', express.static('public'));
 
 app.all('*', function (req, res, next) {
-    next(new NotFoundError('404'));
+    return res.send(new NotFoundError('404'));
 });
 
 app.use(function (err, req, res) {
